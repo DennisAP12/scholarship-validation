@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de Becas Inteligente</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --success: #10B981;
+            --danger: #EF4444;
+            --bg-start: #0F172A;
+            --bg-end: #1E293B;
+            --surface: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #60A5FA, #A78BFA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #CBD5E1;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        select option {
+            background-color: var(--bg-end);
+            color: var(--text);
+        }
+
+        .file-dropzone {
+            position: relative;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            background: rgba(15, 23, 42, 0.3);
+            cursor: pointer;
+        }
+
+        .file-dropzone:hover, .file-dropzone.dragover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .file-dropzone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .file-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .file-msg {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .file-name {
+            display: none;
+            margin-top: 1rem;
+            color: #60A5FA;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        button.submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        button.submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Spinner Animado */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Área de Resultados */
+        .result-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-container.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .result-container.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .result-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .result-container.success .result-title { color: var(--success); }
+        .result-container.error .result-title { color: var(--danger); }
+
+        .result-message {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #E2E8F0;
+            white-space: pre-wrap;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Validador Inteligente</h1>
+            <p>Selecciona el tipo de documento, súbelo y nuestra IA se encargará de verificar su validez y legibilidad.</p>
+        </div>
+
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="tipo_documento">Tipo de Documento</label>
+                <select id="tipo_documento" name="tipo_documento" required>
+                    <option value="" disabled selected>Selecciona una opción...</option>
+                    <option value="identificacion">Identificación Oficial (INE / Pasaporte)</option>
+                    <option value="curp">CURP (Clave Única de Registro de Población)</option>
+                    <option value="comprobante_domicilio">Comprobante de Domicilio</option>
+                    <option value="constancia_estudios">Constancia de Estudios</option>
+                    <option value="solicitud_beca">Solicitud de Beca</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Documento (PDF o Imagen)</label>
+                <div class="file-dropzone" id="dropzone">
+                    <input type="file" id="file" name="file" accept=".pdf, .jpg, .jpeg, .png" required>
+                    <div class="file-icon">📄</div>
+                    <div class="file-msg">Arrastra tu archivo aquí, o haz clic para explorar</div>
+                    <div class="file-name" id="fileName"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="btn-text">Escanear y Validar Documento</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div id="resultContainer" class="result-container">
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-message" id="resultMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file');
+        const fileNameDisplay = document.getElementById('fileName');
+        const dropzone = document.getElementById('dropzone');
+        const uploadForm = document.getElementById('uploadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.querySelector('.btn-text');
+        const spinner = document.getElementById('spinner');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultMessage = document.getElementById('resultMessage');
+
+        // Mostrar nombre del archivo al seleccionarlo
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                fileNameDisplay.textContent = 'Archivo listo: ' + this.files[0].name;
+                fileNameDisplay.style.display = 'block';
+                document.querySelector('.file-msg').style.display = 'none';
+                document.querySelector('.file-icon').style.display = 'none';
+            }
+        });
+
+        // Efectos Visuales para el "Drag and Drop" (Arrastrar archivo)
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
+        });
+
+        dropzone.addEventListener('drop', function(e) {
+            let dt = e.dataTransfer;
+            let files = dt.files;
+            fileInput.files = files; // Asignar archivo al input escondido
+            
+            if (files[0]) {
+                fileNameDisplay.textContent = 'Archivo listo: ' + files[0].name;
+                fileNameDisplay.style.display = 'block';
+                document.querySelector('.file-msg').style.display = 'none';
+                document.querySelector('.file-icon').style.display = 'none';
+            }
+        });
+
+        // Evento principal: Enviar el formulario a nuestra API en Python
+        uploadForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Bloquear botón y mostrar spinner de carga
+            submitBtn.disabled = true;
+            btnText.textContent = "Procesando Inteligencia Artificial...";
+            spinner.style.display = "block";
+            resultContainer.style.display = "none";
+            resultContainer.className = "result-container"; // Limpiar clases (error/success)
+
+            // Construir los datos para la API
+            const formData = new FormData();
+            formData.append('tipo_documento', document.getElementById('tipo_documento').value);
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                // Hacer la petición HTTP a la API de FastAPI corriendo localmente
+                const response = await fetch('http://localhost:8000/analizar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // Mostrar resultados
+                resultContainer.style.display = "block";
+
+                if (data.success && data.es_valido) {
+                    resultContainer.classList.add('success');
+                    resultTitle.innerHTML = `<span>✓</span> ¡Documento Aprobado!`;
+                    // Limpiamos los emojis extras porque ya pusimos icono visual
+                    resultMessage.textContent = data.mensaje.replace('✅ RESULTADO:', '').trim();
+                } else {
+                    resultContainer.classList.add('error');
+                    resultTitle.innerHTML = `<span>⚠</span> Se Detectaron Anomalías`;
+                    resultMessage.textContent = data.mensaje || data.error;
+                }
+
+            } catch (error) {
+                // Error si la API no está corriendo
+                resultContainer.style.display = "block";
+                resultContainer.classList.add('error');
+                resultTitle.innerHTML = `<span>⚠</span> Error de Conexión`;
+                resultMessage.textContent = "No se pudo conectar con la API local. ¿Aseguraste que dejaste ejecutando el comando 'python api.py' en tu terminal de Visual Studio Code?";
+                console.error(error);
+            } finally {
+                // Restaurar estado del botón
+                submitBtn.disabled = false;
+                btnText.textContent = "Escanear Nuevo Documento";
+                spinner.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>

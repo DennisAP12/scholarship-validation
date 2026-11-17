@@ -1,0 +1,27 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+.venv.zip
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node.js
+node_modules/
+
+# Documentos personales y archivos de prueba
+*.pdf
+*.zip
+
+# Datos sensibles y configuración local
+.env
+.env.*
+!.env.example
+
+# Archivos generados
+dist/
+*.log
