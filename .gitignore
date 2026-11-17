@@ -1,27 +1,31 @@
-# Entornos virtuales
+# Python environments and cache
 .venv/
 venv/
 env/
-.venv.zip
-
-# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 
-# Node.js
+# Node dependencies and build output
 node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
 
-# Documentos personales y archivos de prueba
+# Personal documents and sample uploads
 *.pdf
 *.zip
 
-# Datos sensibles y configuración local
+# Secrets and local configuration
 .env
 .env.*
 !.env.example
 
-# Archivos generados
-dist/
+# Logs, test output, and editor files
 *.log
+coverage/
+.nyc_output/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
